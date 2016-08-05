@@ -80,7 +80,6 @@ module.exports = Surface = class Surface extends CocoClass
   #- Initialization
 
   constructor: (@world, @normalCanvas, @webGLCanvas, givenOptions) ->
-    @cid = _.uniqueId()
     super()
     @normalLayers = []
     @options = _.clone(@defaults)
@@ -455,7 +454,6 @@ module.exports = Surface = class Surface extends CocoClass
     @setProgress 0, 0
 
   onNewWorld: (event) ->
-    console.log 'new world...', @cid
     return unless event.world.name is @world.name
     @onStreamingWorldUpdated event
 
