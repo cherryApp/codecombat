@@ -63,8 +63,6 @@ module.exports = Surface = class Surface extends CocoClass
     'level:set-time': 'onSetTime'
     'camera:set-camera': 'onSetCamera'
     'level:restarted': 'onLevelRestarted'
-    'god:new-world-created': 'onNewWorld'
-    'god:streaming-world-updated': 'onNewWorld'
     'tome:cast-spells': 'onCastSpells'
     'level:set-letterbox': 'onSetLetterbox'
     'application:idle-changed': 'onIdleChanged'
@@ -82,6 +80,7 @@ module.exports = Surface = class Surface extends CocoClass
   #- Initialization
 
   constructor: (@world, @normalCanvas, @webGLCanvas, givenOptions) ->
+    @cid = _.uniqueId()
     super()
     @normalLayers = []
     @options = _.clone(@defaults)
@@ -92,6 +91,8 @@ module.exports = Surface = class Surface extends CocoClass
     })
     @realTimeInputEvents = @gameUIState.get('realTimeInputEvents')
     @listenTo(@gameUIState, 'sprite:mouse-down', @onSpriteMouseDown)
+    @listenTo(@gameUIState, 'new-world-created', @onNewWorld)
+    @listenTo(@gameUIState, 'streaming-world-updated', @onNewWorld)
     @onResize = _.debounce @onResize, resizeDelay
     @initEasel()
     @initAudio()
@@ -179,7 +180,7 @@ module.exports = Surface = class Surface extends CocoClass
     @updateState true
     @drawCurrentFrame()
     createjs.Ticker.addEventListener 'tick', @tick
-    Backbone.Mediator.publish 'level:started', {}
+    @gameUIState.trigger 'level:started', {}
 
   #- Update loop
 
@@ -454,6 +455,7 @@ module.exports = Surface = class Surface extends CocoClass
     @setProgress 0, 0
 
   onNewWorld: (event) ->
+    console.log 'new world...', @cid
     return unless event.world.name is @world.name
     @onStreamingWorldUpdated event
 

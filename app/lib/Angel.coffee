@@ -196,6 +196,7 @@ module.exports = class Angel extends CocoClass
     # For Simulator. TODO: refactor all the god:* Mediator events to be local events.
     @shared.god.trigger channel, e
     e.god = @shared.god
+    @shared.gameUIState.trigger channel, e
     Backbone.Mediator.publish 'god:' + channel, e
 
   reportLoadError: ->
